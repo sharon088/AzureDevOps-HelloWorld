@@ -24,6 +24,12 @@ steps:
       jdkFile: 'C:\agents\jdk-21_windows-x64_bin.zip'
     displayName: 'Install JDK 21'
 
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '8.x'  
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
   - task: SonarQubePrepare@6
     inputs:
       SonarQube: 'LocalSonarQube'  # name of the service connection created in Azure DevOps
