@@ -16,6 +16,14 @@ variables:
   buildVersion: "$(Major).$(Minor).$(Patch)"  
 
 steps:
+  - task: SonarQubePrepare@5
+    inputs:
+      SonarQube: 'LocalSonarQube'  # name of the service connection created in Azure DevOps
+      scannerMode: 'MSBuild'
+      projectKey: 'FirstHelloWorld_FirstHelloWorld_AZL8mWu_bYR3Dvep3mJ5'  # Exact key from SonarQube ProjectKey
+      projectName: 'FirstHelloWorld'  # Project name in SonarQube
+      projectVersion: '$(buildVersion)'
+
   - task: NuGetToolInstaller@1
     displayName: 'Install NuGet Tool'
     
