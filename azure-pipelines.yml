@@ -16,6 +16,13 @@ variables:
   buildVersion: "$(Major).$(Minor).$(Patch)"  
 
 steps:
+  - task: JavaToolInstaller@0
+    inputs:
+      versionSpec: '17' 
+      jdkArchitectureOption: 'x64'  
+      jdkSourceOption: 'PreInstalled'  
+    displayName: 'Install JDK 17'
+
   - task: SonarQubePrepare@6
     inputs:
       SonarQube: 'LocalSonarQube'  # name of the service connection created in Azure DevOps
