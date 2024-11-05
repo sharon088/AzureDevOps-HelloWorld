@@ -16,12 +16,6 @@ variables:
   buildVersion: "$(Major).$(Minor).$(Patch)"  
 
 steps:
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'clean'
-      projects: '$(project)'
-      displayName: 'Clean project'
-
   - task: JavaToolInstaller@0
     inputs:
       versionSpec: '21' 
