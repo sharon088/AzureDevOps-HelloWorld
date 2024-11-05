@@ -20,7 +20,8 @@ steps:
     inputs:
       versionSpec: '21' 
       jdkArchitectureOption: 'x64'  
-      jdkSourceOption: 'PreInstalled'
+      jdkSourceOption: 'LocalDirectory'
+      jdkFile: 'C:\Program Files\Java\jdk-21'
     displayName: 'Install JDK 21'
 
   - task: SonarQubePrepare@6
