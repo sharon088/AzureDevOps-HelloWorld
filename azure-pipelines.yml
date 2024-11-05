@@ -13,7 +13,10 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   project: '**/*.csproj'
-  buildVersion: '1.0.0'  
+  Major: '1'
+  Minor: '0'
+  Patch: $(Build.BuildId)  # Automatically increments with each build
+  buildVersion: "$(Major).$(Minor).$(Patch)"  
 
 steps:
   - task: NuGetToolInstaller@1
@@ -42,8 +45,12 @@ steps:
     inputs:
       command: 'pack'
       projects: '$(project)'
-      arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-    displayName: 'Pack project'
+      arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) --version $(buildVersion)'
+    displayName: 'Pack project with version $(buildVersion)'
+
+  - script: |
+      echo "Version: $(buildVersion)"
+    displayName: 'Print Version to Console'
 
   # Publish artifact to Azure Artifacts
   - script: |
