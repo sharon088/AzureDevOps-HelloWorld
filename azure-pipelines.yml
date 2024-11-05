@@ -9,11 +9,40 @@ trigger:
 pool:
   name: Default
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+variables:
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  project: '**/sharon088.AzureHelloWorld.csproj'
+  buildVersion: '1.0.0'  
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+steps:
+  # Restore dependencies
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'restore'
+      projects: '$(project)'
+    displayName: 'Restore dependencies'
+
+  # Build the project
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: '$(project)'
+      arguments: '--configuration $(buildConfiguration)'
+    displayName: 'Build project'
+
+  # Pack and upload as an artifact
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'pack'
+      projects: '$(project)'
+      arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    displayName: 'Pack project'
+
+  # Publish artifact to Azure Artifacts
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)'
+      artifactName: 'HelloWorldPackage'
+      publishLocation: 'pipeline'
+    displayName: 'Publish package as artifact'
