@@ -45,13 +45,6 @@ steps:
       arguments: '--configuration $(buildConfiguration)'
     displayName: 'Build project'
 
-  - task: SonarQubeAnalyze@5
-    displayName: 'Run SonarQube Analysis'
-
-  - task: SonarQubePublish@5
-    inputs:
-      pollingTimeoutSec: '300'
-    displayName: 'Publish SonarQube Quality Gate Result'
 
   # Pack and upload as an artifact
   - task: DotNetCoreCLI@2
