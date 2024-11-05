@@ -45,6 +45,8 @@ steps:
       arguments: '--configuration $(buildConfiguration)'
     displayName: 'Build project'
 
+  - task: SonarQubeAnalyze@6
+
 
   # Pack and upload as an artifact
   - task: DotNetCoreCLI@2
