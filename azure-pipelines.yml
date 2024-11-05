@@ -16,7 +16,7 @@ variables:
   buildVersion: "$(Major).$(Minor).$(Patch)"  
 
 steps:
-  - task: SonarQubePrepare@7
+  - task: SonarQubePrepare@5
     inputs:
       SonarQube: 'LocalSonarQube'  # name of the service connection created in Azure DevOps
       scannerMode: 'MSBuild'
@@ -45,10 +45,10 @@ steps:
       arguments: '--configuration $(buildConfiguration)'
     displayName: 'Build project'
 
-  - task: SonarQubeAnalyze@7
+  - task: SonarQubeAnalyze@5
     displayName: 'Run SonarQube Analysis'
 
-  - task: SonarQubePublish@7
+  - task: SonarQubePublish@5
     inputs:
       pollingTimeoutSec: '300'
     displayName: 'Publish SonarQube Quality Gate Result'
