@@ -45,7 +45,11 @@ steps:
     inputs:
       command: 'pack'
       projects: '$(project)'
-      arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) --version $(buildVersion)'
+      versioningScheme: 'byBuildNumber'
+      majorVersion: '$(Major)' 
+      minorVersion: '$(Minor)'  
+      patchVersion: '$(Patch)'  
+      arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     displayName: 'Pack project with version $(buildVersion)'
 
   - script: |
