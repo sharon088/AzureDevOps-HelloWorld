@@ -12,15 +12,10 @@ pool:
 variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  project: '**/sharon088.AzureHelloWorld.csproj'
+  project: '**/*.csproj'
   buildVersion: '1.0.0'  
 
 steps:
-  - task: UseDotNet@2
-    inputs:
-      packageType: 'sdk'
-      version: '8.x' 
-
   # Restore dependencies
   - task: DotNetCoreCLI@2
     inputs:
