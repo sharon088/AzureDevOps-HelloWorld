@@ -18,9 +18,10 @@ variables:
 steps:
   - task: JavaToolInstaller@0
     inputs:
-      versionSpec: '17' 
+      versionSpec: '21' 
       jdkArchitectureOption: 'x64'  
-    displayName: 'Install JDK 17'
+      jdkSourceOption: 'PreInstalled'
+    displayName: 'Install JDK 21'
 
   - task: SonarQubePrepare@6
     inputs:
@@ -52,6 +53,9 @@ steps:
     displayName: 'Build project'
 
   - task: SonarQubeAnalyze@6
+    inputs:
+      jdkversion: 'JAVA_HOME_21_X64'
+  
 
 
   # Pack and upload as an artifact
