@@ -16,7 +16,7 @@ variables:
   buildVersion: "$(Major).$(Minor).$(Patch)"  
 
 steps:
-  - task: SonarQubePrepare@7
+  - task: SonarQubePrepare@6
     inputs:
       SonarQube: 'LocalSonarQube'  # name of the service connection created in Azure DevOps
       scannerMode: 'MSBuild'
