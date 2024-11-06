@@ -86,7 +86,7 @@ steps:
       Subject: 'PipeLine From Azure'
       emailBodyFormat: 'InLine'
       EmailBody: |
-        Pipeline status: $(Build.BuildResult)
+        Pipeline status: $(Build.Status)
         
         Build Number: $(Build.BuildNumber)
         Build ID: $(Build.BuildId)
