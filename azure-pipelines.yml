@@ -25,10 +25,11 @@ steps:
    
   - task: SonarQubePrepare@6
     inputs:
-      SonarQube: 'LocalSonarQube'
-      scannerMode: 'dotnet'
-      projectKey: 'FirstHelloWorld_FirstHelloWorld_AZL8mWu_bYR3Dvep3mJ5'
-      sonar.branch.name: ''
+      SonarQube: 'LocalSonarQube'  # name of the service connection created in Azure DevOps
+      scannerMode: 'MSBuild'
+      projectKey: 'FirstHelloWorld_FirstHelloWorld_AZL8mWu_bYR3Dvep3mJ5'  # Exact key from SonarQube ProjectKey
+      projectName: 'FirstHelloWorld'  # Project name in SonarQube
+      projectVersion: '$(buildVersion)'
 
   - task: NuGetToolInstaller@1
     displayName: 'Install NuGet Tool'
