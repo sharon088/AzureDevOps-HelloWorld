@@ -27,7 +27,7 @@ steps:
    
   - task: SonarQubePrepare@7
     inputs:
-      SonarQube: 'SonarCloudCon'  # name of the service connection created in Azure DevOps
+      SonarQube: 'SonarQubeForSonarCloud'  # name of the service connection created in Azure DevOps
       scannerMode: 'MSBuild'
       projectKey: 'sharon088_FirstHelloWorld'  # Exact key from SonarCloud 
       projectName: 'FirstHelloWorld'  # Project name in SonarQube
