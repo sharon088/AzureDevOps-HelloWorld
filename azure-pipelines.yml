@@ -13,8 +13,6 @@ variables:
   Minor: '0'
   Patch: $(Build.BuildId)  # Automatically increments with each build
   buildVersion: "$(Major).$(Minor).$(Patch)-$(Build.SourceBranchName)"  
-  smtpUsername: $(username) # Reference a secure variable for username
-  smtpPassword: $(password) # Reference a secure variable for password
 
 steps:
   - checkout: self
