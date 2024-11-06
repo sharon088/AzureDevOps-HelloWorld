@@ -1,4 +1,3 @@
-
 trigger:
 - main
 
@@ -18,6 +17,7 @@ variables:
 steps:
   - checkout: self
     fetchDepth: 0
+  
   - task: UseDotNet@2
     inputs:
       packageType: 'sdk'
@@ -27,6 +27,7 @@ steps:
   - task: UseNode@1
     inputs:
       version: '23.x'
+  
   - task: SonarQubePrepare@6
     condition: eq(variables['Build.SourceBranchName'], 'develop')
     inputs:
@@ -62,7 +63,7 @@ steps:
     inputs:
       jdkversion: 'JAVA_HOME_21_X64'
 
-# Publish Quality Gate Result task
+  # Publish Quality Gate Result task
   - task: SonarQubePublish@6
     condition: eq(variables['Build.SourceBranchName'], 'develop')
     inputs:
@@ -76,17 +77,23 @@ steps:
       versioningScheme: 'byEnvVar' 
       versionEnvVar: 'buildVersion'
     displayName: 'Pack project with branch $(Build.SourceBranchName) and version $(buildVersion)'
-  
+
+  # Publish artifact to Azure Artifacts
+  - script: |
+      nuget.exe push -Source "https://pkgs.dev.azure.com/sharon088/FirstHelloWorld/_packaging/HelloWorldFeed/nuget/v3/index.json" -ApiKey az $(Build.ArtifactStagingDirectory)\*.nupkg
+    displayName: 'Push package to Azure Artifacts feed'
+
+  # Success Email - send if build is successful
   - task: SendGridEmail@2
-    condition: always()
+    condition: succeeded()
     inputs:
       SendGridApiKey: '$(SENDGRID_API_KEY)'
       FromAddress: 'sharon088@gmail.com'
       ToAddresses: 'rotem23592@gmail.com'
-      Subject: 'PipeLine From Azure'
+      Subject: 'Pipeline Success - Azure DevOps Build'
       emailBodyFormat: 'InLine'
       EmailBody: |
-        Pipeline status: $(Build.Status)
+        Pipeline has completed successfully.
         
         Build Number: $(Build.BuildNumber)
         Build ID: $(Build.BuildId)
@@ -94,16 +101,27 @@ steps:
         ## Additional Information
         - Source Branch: $(Build.SourceBranchName)
         - Project: $(project)
-        
-        # Logs
-        Please check the pipeline logs in Azure DevOps for detailed error messages if the build has failed.
 
+  # Failure Email - send if build fails
+  - task: SendGridEmail@2
+    condition: failed()
+    inputs:
+      SendGridApiKey: '$(SENDGRID_API_KEY)'
+      FromAddress: 'sharon088@gmail.com'
+      ToAddresses: 'rotem23592@gmail.com'
+      Subject: 'Pipeline Failed - Azure DevOps Build'
+      emailBodyFormat: 'InLine'
+      EmailBody: |
+        Pipeline has failed. Please check the logs for details.
+        
+        Build Number: $(Build.BuildNumber)
+        Build ID: $(Build.BuildId)
+        
+        ## Additional Information
+        - Source Branch: $(Build.SourceBranchName)
+        - Project: $(project)
+
+  # Print Version to Console
   - script: |
       echo "Version: $(buildVersion)"
     displayName: 'Print Version to Console'
-
-  # Publish artifact to Azure Artifacts
-  - script: |
-      nuget.exe push -Source "https://pkgs.dev.azure.com/sharon088/FirstHelloWorld/_packaging/HelloWorldFeed/nuget/v3/index.json" -ApiKey az $(Build.ArtifactStagingDirectory)\*.nupkg
-    displayName: 'Push package to Azure Artifacts feed'
-  
