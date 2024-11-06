@@ -78,13 +78,25 @@ steps:
     displayName: 'Pack project with branch $(Build.SourceBranchName) and version $(buildVersion)'
   
   - task: SendGridEmail@2
+    condition: always()
     inputs:
       SendGridApiKey: '$(SENDGRID_API_KEY)'
       FromAddress: 'sharon088@gmail.com'
       ToAddresses: 'rotem23592@gmail.com'
       Subject: 'PipeLine From Azure'
       emailBodyFormat: 'InLine'
-      EmailBody: 'test pipeline'
+      EmailBody: |
+        Pipeline status: $(Build.BuildResult)
+        
+        Build Number: $(Build.BuildNumber)
+        Build ID: $(Build.BuildId)
+        
+        ## Additional Information
+        - Source Branch: $(Build.SourceBranchName)
+        - Project: $(project)
+        
+        # Logs
+        Please check the pipeline logs in Azure DevOps for detailed error messages if the build has failed.
 
   - script: |
       echo "Version: $(buildVersion)"
