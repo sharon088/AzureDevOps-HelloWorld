@@ -23,7 +23,7 @@ steps:
       installationPath: $(Agent.ToolsDirectory)/dot
 
    
-  - task: SonarQubePrepare@7
+  - task: SonarQubePrepare@6
     inputs:
       SonarQube: 'LocalSonarQube'
       scannerMode: 'dotnet'
@@ -51,7 +51,9 @@ steps:
       arguments: '--configuration $(buildConfiguration)'
     displayName: 'Build project'
   
-  - task: SonarQubeAnalyze@7
+  - task: SonarQubeAnalyze@6
+    inputs:
+      jdkversion: 'JAVA_HOME_21_X64'
 
 # Publish Quality Gate Result task
   - task: SonarQubePublish@7
