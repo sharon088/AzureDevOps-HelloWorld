@@ -22,16 +22,13 @@ steps:
       version: '8.x'  
       installationPath: $(Agent.ToolsDirectory)/dot
 
-  - powershell: |
-      $params = "$env:SONARQUBE_SCANNER_PARAMS" -replace '"sonar.branch.name":"[\w,/,-]*"\,?'
-      Write-Host "##vso[task.setvariable variable=SONARQUBE_SCANNER_PARAMS]$params"
-    displayName: 'Modify SONARQUBE_SCANNER_PARAMS'
    
   - task: SonarQubePrepare@7
     inputs:
       SonarQube: 'LocalSonarQube'
       scannerMode: 'dotnet'
       projectKey: 'FirstHelloWorld_FirstHelloWorld_AZL8mWu_bYR3Dvep3mJ5'
+      sonar.branch.name: ''
 
   - task: NuGetToolInstaller@1
     displayName: 'Install NuGet Tool'
