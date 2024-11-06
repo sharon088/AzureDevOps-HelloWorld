@@ -14,6 +14,8 @@ variables:
   Minor: '0'
   Patch: $(Build.BuildId)  # Automatically increments with each build
   buildVersion: "$(Major).$(Minor).$(Patch)-$(Build.SourceBranchName)"  
+  smtpUsername: $(username) # Reference a secure variable for username
+  smtpPassword: $(password) # Reference a secure variable for password
 
 steps:
   - checkout: self
@@ -93,5 +95,5 @@ steps:
       BodyAsHtml: false
       AddAttachment: false
       SmtpServer: 'smtp.gmail.com'
-      SmtpUsername: $(username)
-      SmtpPassword: $(password)
+      SmtpUsername: $(smtpUsername)
+      SmtpPassword: $(SmtpPassword)
