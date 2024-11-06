@@ -75,14 +75,6 @@ steps:
       versionEnvVar: 'buildVersion'
     displayName: 'Pack project with branch $(Build.SourceBranchName) and version $(buildVersion)'
   
-  - task: SendGridEmail@2
-    inputs:
-      SendGridApiKey: '$(SENDGRID_API_KEY)'
-      FromAddress: 'sharon088@gmail.com'
-      ToAddresses: 'rotem23592@gmail.com'
-      Subject: 'PipeLine From Azure'
-      emailBodyFormat: 'InLine'
-      EmailBody: 'test pipeline'
 
   - script: |
       echo "Version: $(buildVersion)"
