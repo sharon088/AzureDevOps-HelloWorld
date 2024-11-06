@@ -1,4 +1,3 @@
-name: $(Major).$(Minor).$(Patch) 
 
 trigger:
 - main
@@ -95,5 +94,5 @@ steps:
       BodyAsHtml: false
       AddAttachment: false
       SmtpServer: 'smtp.gmail.com'
-      SmtpUsername: $(smtpUsername)
-      SmtpPassword: $(SmtpPassword)
+      SmtpUsername: '$(smtpUsername)'
+      SmtpPassword: '$(SmtpPassword)'
