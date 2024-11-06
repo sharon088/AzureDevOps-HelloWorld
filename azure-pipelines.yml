@@ -16,6 +16,8 @@ variables:
   buildVersion: "$(Major).$(Minor).$(Patch)"  
 
 steps:
+  - checkout: self
+    fetchDepth: 0
   - task: UseDotNet@2
     inputs:
       packageType: 'sdk'
@@ -23,11 +25,11 @@ steps:
       installationPath: $(Agent.ToolsDirectory)/dot
 
    
-  - task: SonarQubePrepare@6
+  - task: SonarQubePrepare@7
     inputs:
-      SonarQube: 'LocalSonarQube'  # name of the service connection created in Azure DevOps
+      SonarQube: 'SonarCloudCon'  # name of the service connection created in Azure DevOps
       scannerMode: 'MSBuild'
-      projectKey: 'FirstHelloWorld_FirstHelloWorld_AZL8mWu_bYR3Dvep3mJ5'  # Exact key from SonarQube ProjectKey
+      projectKey: 'sharon088_FirstHelloWorld'  # Exact key from SonarCloud 
       projectName: 'FirstHelloWorld'  # Project name in SonarQube
       projectVersion: '$(buildVersion)'
 
@@ -52,7 +54,7 @@ steps:
       arguments: '--configuration $(buildConfiguration)'
     displayName: 'Build project'
   
-  - task: SonarQubeAnalyze@6
+  - task: SonarQubeAnalyze@7
     inputs:
       jdkversion: 'JAVA_HOME_21_X64'
 
