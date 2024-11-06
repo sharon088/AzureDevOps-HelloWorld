@@ -26,6 +26,7 @@ steps:
 
    
   - task: SonarQubePrepare@6
+    condition: eq(variables['Build.SourceBranchName'], 'develop')
     inputs:
       SonarQube: 'SonarQubeForSonarCloud'  # name of the service connection created in Azure DevOps
       scannerMode: 'MSBuild'
@@ -55,22 +56,24 @@ steps:
     displayName: 'Build project'
   
   - task: SonarQubeAnalyze@6
+    condition: eq(variables['Build.SourceBranchName'], 'develop')
     inputs:
       jdkversion: 'JAVA_HOME_21_X64'
 
 # Publish Quality Gate Result task
   - task: SonarQubePublish@6
+    condition: eq(variables['Build.SourceBranchName'], 'develop')
     inputs:
       pollingTimeoutSec: '300'
 
-  # Pack and upload as an artifact
+  # Pack artifact
   - task: DotNetCoreCLI@2
     inputs:
       command: 'pack'
       projects: '$(project)'
       versioningScheme: 'byBuildNumber' 
-      arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:PackageId=AzureHelloWorld.$(buildVersion)'
-    displayName: 'Pack project with version $(buildVersion)'
+      arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:PackageId=AzureHelloWorld.$(Build.SourceBranchName).$(buildVersion)'
+    displayName: 'Pack project with branch $(Build.SourceBranchName) and version $(buildVersion)'
 
   - script: |
       echo "Version: $(buildVersion)"
