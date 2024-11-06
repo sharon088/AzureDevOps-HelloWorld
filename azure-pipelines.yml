@@ -24,7 +24,9 @@ steps:
       version: '8.x'  
       installationPath: $(Agent.ToolsDirectory)/dot
 
-   
+  - task: UseNode@1
+    inputs:
+      version: '23.x'
   - task: SonarQubePrepare@6
     condition: eq(variables['Build.SourceBranchName'], 'develop')
     inputs:
