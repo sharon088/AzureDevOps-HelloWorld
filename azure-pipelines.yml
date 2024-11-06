@@ -74,7 +74,7 @@ steps:
     inputs:
       command: 'pack'
       projects: '$(project)'
-      versioningScheme: 'byBuildNumber' 
+      versioningScheme: 'byEnvVar' 
       versionEnvVar: 'buildVersion'
     displayName: 'Pack project with branch $(Build.SourceBranchName) and version $(buildVersion)'
 
