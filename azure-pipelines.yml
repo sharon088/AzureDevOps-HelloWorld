@@ -29,7 +29,7 @@ steps:
     inputs:
       SonarQube: 'SonarQubeForSonarCloud'  # name of the service connection created in Azure DevOps
       scannerMode: 'MSBuild'
-      organization: 'sharon088'
+      organization: 'sharonsonarcloud'
       projectKey: 'sharon088_FirstHelloWorld'  # Exact key from SonarCloud 
       projectName: 'FirstHelloWorld'  # Project name in SonarQube
 
