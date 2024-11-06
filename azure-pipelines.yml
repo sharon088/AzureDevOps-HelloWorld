@@ -44,11 +44,7 @@ steps:
     displayName: 'NuGet Authenticate'
 
   # Restore dependencies
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'restore'
-      projects: '$(project)'
-    displayName: 'Restore dependencies'
+  
 
   # Build the project
   - task: DotNetCoreCLI@2
