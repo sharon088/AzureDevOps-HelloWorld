@@ -13,6 +13,7 @@ variables:
   Minor: '0'
   Patch: $(Build.BuildId)  # Automatically increments with each build
   buildVersion: "$(Major).$(Minor).$(Patch)-$(Build.SourceBranchName)"  
+  SENDGRID_API_KEY: $(sendgridApiKey)
 
 steps:
   - checkout: self
@@ -73,6 +74,15 @@ steps:
       versioningScheme: 'byEnvVar' 
       versionEnvVar: 'buildVersion'
     displayName: 'Pack project with branch $(Build.SourceBranchName) and version $(buildVersion)'
+  
+  - task: SendGridEmail@2
+    inputs:
+      SendGridApiKey: '$(SENDGRID_API_KEY)'
+      FromAddress: 'sharon088@gmail.com'
+      ToAddresses: 'rotem23592@gmail.com'
+      Subject: 'PipeLine From Azure'
+      emailBodyFormat: 'InLine'
+      EmailBody: 'test pipeline'
 
   - script: |
       echo "Version: $(buildVersion)"
