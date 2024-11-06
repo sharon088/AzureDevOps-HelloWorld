@@ -25,11 +25,13 @@ steps:
       installationPath: $(Agent.ToolsDirectory)/dot
 
    
-  - task: SonarQubePrepare@7
+  - task: SonarQubePrepare@6
     inputs:
       SonarQube: 'SonarQubeForSonarCloud'  # name of the service connection created in Azure DevOps
-      scannerMode: 'dotnet'
+      scannerMode: 'MSBuild'
+      organization: 'sharon088'
       projectKey: 'sharon088_FirstHelloWorld'  # Exact key from SonarCloud 
+      projectName: 'FirstHelloWorld'  # Project name in SonarQube
       projectVersion: '$(buildVersion)'
 
   - task: NuGetToolInstaller@1
@@ -58,7 +60,7 @@ steps:
       jdkversion: 'JAVA_HOME_21_X64'
 
 # Publish Quality Gate Result task
-  - task: SonarQubePublish@7
+  - task: SonarQubePublish@6
     inputs:
       pollingTimeoutSec: '300'
 
