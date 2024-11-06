@@ -16,27 +16,11 @@ variables:
   buildVersion: "$(Major).$(Minor).$(Patch)"  
 
 steps:
-  - task: JavaToolInstaller@0
-    inputs:
-      versionSpec: '21' 
-      jdkArchitectureOption: 'x64'  
-      jdkSourceOption: 'LocalDirectory'
-      jdkFile: 'C:\agents\jdk-21_windows-x64_bin.zip'
-    displayName: 'Install JDK 21'
-
   - task: UseDotNet@2
     inputs:
       packageType: 'sdk'
       version: '8.x'  
       installationPath: $(Agent.ToolsDirectory)/dotnet
-
-  - task: SonarQubePrepare@6
-    inputs:
-      SonarQube: 'LocalSonarQube'  # name of the service connection created in Azure DevOps
-      scannerMode: 'MSBuild'
-      projectKey: 'FirstHelloWorld_FirstHelloWorld_AZL8mWu_bYR3Dvep3mJ5'  # Exact key from SonarQube ProjectKey
-      projectName: 'FirstHelloWorld'  # Project name in SonarQube
-      projectVersion: '$(buildVersion)'
 
   - task: NuGetToolInstaller@1
     displayName: 'Install NuGet Tool'
@@ -58,11 +42,6 @@ steps:
       projects: '$(project)'
       arguments: '--configuration $(buildConfiguration)'
     displayName: 'Build project'
-
-  - task: SonarQubeAnalyze@6
-    inputs:
-      jdkversion: 'JAVA_HOME_21_X64'
-  
 
 
   # Pack and upload as an artifact
