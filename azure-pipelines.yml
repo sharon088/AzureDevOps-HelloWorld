@@ -27,6 +27,8 @@ steps:
       SonarQube: 'LocalSonarQube'
       scannerMode: 'dotnet'
       projectKey: 'FirstHelloWorld_FirstHelloWorld_AZL8mWu_bYR3Dvep3mJ5'
+      extraProperties: |
+        sonar.branch.name=""
 
   - task: NuGetToolInstaller@1
     displayName: 'Install NuGet Tool'
