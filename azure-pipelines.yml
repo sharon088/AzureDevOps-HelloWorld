@@ -25,12 +25,12 @@ steps:
       installationPath: $(Agent.ToolsDirectory)/dot
 
    
-  - task: SonarQubePrepare@6
+  - task: SonarQubePrepare@7
     inputs:
       SonarQube: 'SonarQubeForSonarCloud'  # name of the service connection created in Azure DevOps
-      scannerMode: 'MSBuild'
+      scannerMode: 'dotnet'
       projectKey: 'sharon088_FirstHelloWorld'  # Exact key from SonarCloud 
-      projectName: 'FirstHelloWorld'  # Project name in SonarQube
+      projectVersion: '$(buildVersion)'
 
   - task: NuGetToolInstaller@1
     displayName: 'Install NuGet Tool'
