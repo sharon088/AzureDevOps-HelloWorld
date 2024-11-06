@@ -13,7 +13,7 @@ variables:
   Major: '1'
   Minor: '0'
   Patch: $(Build.BuildId)  # Automatically increments with each build
-  buildVersion: "$(Build.SourceBranchName).$(Major).$(Minor).$(Patch)"  
+  buildVersion: "$(Major).$(Minor).$(Patch)-$(Build.SourceBranchName)"  
 
 steps:
   - checkout: self
@@ -73,7 +73,6 @@ steps:
       projects: '$(project)'
       versioningScheme: 'byEnvVar' 
       versionEnvVar: 'buildVersion'
-      arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     displayName: 'Pack project with branch $(Build.SourceBranchName) and version $(buildVersion)'
 
   - script: |
