@@ -71,8 +71,8 @@ steps:
     inputs:
       command: 'pack'
       projects: '$(project)'
-      versioningScheme: 'off' 
-      arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:PackageId=AzureHelloWorld /p:Version=$(Build.SourceBranchName).$(Build.BuildId) --no-build'
+      versioningScheme: 'byBuildNumber' 
+      arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     displayName: 'Pack project with branch $(Build.SourceBranchName) and version $(buildVersion)'
 
   - script: |
