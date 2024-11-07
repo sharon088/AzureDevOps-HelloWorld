@@ -76,7 +76,7 @@ steps:
       command: 'pack'
       projects: '$(project)'
       includesymbols: true
-      buildProperties: 'PackageIdPrefix=CustomPrefix.'
+      buildProperties: 'PackageIdPrefix=$(packageName).'
       versioningScheme: 'byEnvVar' 
       versionEnvVar: 'packageName'
     displayName: 'Pack project with branch $(Build.SourceBranchName) and version $(packageName)'
