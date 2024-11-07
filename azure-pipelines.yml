@@ -78,10 +78,13 @@ steps:
       versionEnvVar: 'buildVersion'
     displayName: 'Pack project with branch $(Build.SourceBranchName) and version $(buildVersion)'
 
-  # Publish artifact to Azure Artifacts
-  - script: |
-      nuget.exe push -Source "https://pkgs.dev.azure.com/sharon088/FirstHelloWorld/_packaging/HelloWorldFeed/nuget/v3/index.json" -ApiKey az $(Build.ArtifactStagingDirectory)\*.nupkg
-    displayName: 'Push package to Azure Artifacts feed'
+  # Push package to Azure Artifacts
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'push'
+      packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+      nuGetFeedType: 'internal'
+      publishVstsFeed: 'cde17caf-1198-4a60-90b3-0703b5263860/834a9e3c-e662-4c26-8a33-a54324b7196b'
 
   # Success Email - send if build is successful
   - task: SendGridEmail@2
