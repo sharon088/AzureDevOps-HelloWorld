@@ -78,7 +78,7 @@ steps:
       includesymbols: true
       buildProperties: 'PackageIdPrefix=$(packageName).'
       versioningScheme: 'byEnvVar' 
-      versionEnvVar: 'packageName'
+      versionEnvVar: 'buildVersion'
     displayName: 'Pack project with branch $(Build.SourceBranchName) and version $(packageName)'
 
   # Push package to Azure Artifacts
