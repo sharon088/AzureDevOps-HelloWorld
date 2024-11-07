@@ -118,7 +118,6 @@ stages:
         steps:
           # Success Email
           - task: SendGridEmail@2
-            condition: succeeded()
             inputs:
               SendGridApiKey: '$(SENDGRID_API_KEY)'
               FromAddress: 'sharon088@gmail.com'
@@ -135,23 +134,5 @@ stages:
                 - Source Branch: $(Build.SourceBranchName)
                 - Project: $(project)
 
-          # Failure Email
-          - task: SendGridEmail@2
-            condition: failed()
-            inputs:
-              SendGridApiKey: '$(SENDGRID_API_KEY)'
-              FromAddress: 'sharon088@gmail.com'
-              ToAddresses: 'rotem23592@gmail.com'
-              Subject: 'Pipeline Failed - Azure DevOps Build'
-              emailBodyFormat: 'InLine'
-              EmailBody: |
-                Pipeline has failed. Please check the logs for details.
-                
-                Build Number: $(Build.BuildNumber)
-                Build ID: $(Build.BuildId)
-                
-                ## Additional Information
-                - Source Branch: $(Build.SourceBranchName)
-                - Project: $(project)
 
 
