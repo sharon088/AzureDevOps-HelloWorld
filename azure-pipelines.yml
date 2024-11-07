@@ -1,10 +1,12 @@
 trigger:
 - main
+- develop
 
 pool:
   name: Default
 
 variables:
+  system.debug: true
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   project: '**/*.csproj'
@@ -14,114 +16,142 @@ variables:
   buildVersion: "$(Major).$(Minor).$(Patch)-$(Build.SourceBranchName)"  
   SENDGRID_API_KEY: $(sendgridApiKey)
 
-steps:
-  - checkout: self
-    fetchDepth: 0
-  
-  - task: UseDotNet@2
-    inputs:
-      packageType: 'sdk'
-      version: '8.x'  
-      installationPath: $(Agent.ToolsDirectory)/dot
+stages:
+  - stage: CleanAndInstall
+    jobs:
+      - job: CleanAndInstallDependencies
+        displayName: 'Clean and Install Dependencies'
+        steps:
+          - checkout: self
+            fetchDepth: 0
+            
+          # Install .NET SDK
+          - task: UseDotNet@2
+            inputs:
+              packageType: 'sdk'
+              version: '8.x'  
+              installationPath: $(Agent.ToolsDirectory)/dot
 
-  - task: UseNode@1
-    inputs:
-      version: '23.x'
-  
-  - task: SonarQubePrepare@6
-    condition: eq(variables['Build.SourceBranchName'], 'develop')
-    inputs:
-      SonarQube: 'SonarQubeForSonarCloud'  # name of the service connection created in Azure DevOps
-      scannerMode: 'MSBuild'
-      organization: 'sharonsonarcloud'
-      projectKey: 'sharon088_FirstHelloWorld'  # Exact key from SonarCloud 
-      projectName: 'FirstHelloWorld'  # Project name in SonarQube
+          # Install Node.js
+          - task: UseNode@1
+            inputs:
+              version: '23.x'
 
-  - task: NuGetToolInstaller@1
-    displayName: 'Install NuGet Tool'
-    
-  - task: NuGetAuthenticate@1
-    displayName: 'NuGet Authenticate'
+          # Install NuGet Tool
+          - task: NuGetToolInstaller@1
+            displayName: 'Install NuGet Tool'
 
-  # Restore dependencies
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'restore'
-      projects: '$(project)'
-    displayName: 'Restore dependencies'
+          # NuGet Authenticate
+          - task: NuGetAuthenticate@1
+            displayName: 'NuGet Authenticate'
 
-  # Build the project
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'build'
-      projects: '$(project)'
-      arguments: '--configuration $(buildConfiguration)'
-    displayName: 'Build project'
-  
-  - task: SonarQubeAnalyze@6
-    condition: eq(variables['Build.SourceBranchName'], 'develop')
-    inputs:
-      jdkversion: 'JAVA_HOME_21_X64'
+  - stage: BuildAndAnalyze
+    dependsOn: CleanAndInstall
+    jobs:
+      - job: BuildAndAnalyzeProject
+        displayName: 'Build and Analyze Project'
+        steps:
+          # Restore dependencies
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'restore'
+              projects: '$(project)'
+            displayName: 'Restore dependencies'
 
-  # Publish Quality Gate Result task
-  - task: SonarQubePublish@6
-    condition: eq(variables['Build.SourceBranchName'], 'develop')
-    inputs:
-      pollingTimeoutSec: '300'
+          # Build project
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'build'
+              projects: '$(project)'
+              arguments: '--configuration $(buildConfiguration)'
+            displayName: 'Build project'
 
-  # Pack artifact
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'pack'
-      projects: '$(project)'
-      versioningScheme: 'byEnvVar' 
-      versionEnvVar: 'buildVersion'
-    displayName: 'Pack project with branch $(Build.SourceBranchName) and version $(buildVersion)'
+          # SonarQube Analysis (only for develop branch)
+          - task: SonarQubePrepare@6
+            condition: eq(variables['Build.SourceBranchName'], 'develop')
+            inputs:
+              SonarQube: 'SonarQubeForSonarCloud'
+              scannerMode: 'MSBuild'
+              organization: 'sharonsonarcloud'
+              projectKey: 'sharon088_FirstHelloWorld'
+              projectName: 'FirstHelloWorld'
 
-  # Publish artifact to Azure Artifacts
-  - script: |
-      nuget.exe push -Source "https://pkgs.dev.azure.com/sharon088/FirstHelloWorld/_packaging/HelloWorldFeed/nuget/v3/index.json" -ApiKey az $(Build.ArtifactStagingDirectory)\*.nupkg
-    displayName: 'Push package to Azure Artifacts feed'
+          # SonarQube Analyze (only for develop branch)
+          - task: SonarQubeAnalyze@6
+            condition: eq(variables['Build.SourceBranchName'], 'develop')
+            inputs:
+              jdkversion: 'JAVA_HOME_21_X64'
 
-  # Success Email - send if build is successful
-  - task: SendGridEmail@2
-    condition: succeeded()
-    inputs:
-      SendGridApiKey: '$(SENDGRID_API_KEY)'
-      FromAddress: 'sharon088@gmail.com'
-      ToAddresses: 'rotem23592@gmail.com'
-      Subject: 'Pipeline Success - Azure DevOps Build'
-      emailBodyFormat: 'InLine'
-      EmailBody: |
-        Pipeline has completed successfully.
-        
-        Build Number: $(Build.BuildNumber)
-        Build ID: $(Build.BuildId)
-        
-        ## Additional Information
-        - Source Branch: $(Build.SourceBranchName)
-        - Project: $(project)
+  - stage: Publish
+    dependsOn: BuildAndAnalyze
+    jobs:
+      - job: PackAndPublish
+        displayName: 'Pack and Publish'
+        steps:
+          # Pack the project
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'pack'
+              projects: '$(project)'
+              versioningScheme: 'byEnvVar' 
+              versionEnvVar: 'buildVersion'
+            displayName: 'Pack project with version $(buildVersion)'
 
-  # Failure Email - send if build fails
-  - task: SendGridEmail@2
-    condition: failed()
-    inputs:
-      SendGridApiKey: '$(SENDGRID_API_KEY)'
-      FromAddress: 'sharon088@gmail.com'
-      ToAddresses: 'rotem23592@gmail.com'
-      Subject: 'Pipeline Failed - Azure DevOps Build'
-      emailBodyFormat: 'InLine'
-      EmailBody: |
-        Pipeline has failed. Please check the logs for details.
-        
-        Build Number: $(Build.BuildNumber)
-        Build ID: $(Build.BuildId)
-        
-        ## Additional Information
-        - Source Branch: $(Build.SourceBranchName)
-        - Project: $(project)
+          # Push package to Azure Artifacts
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'push'
+              packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+              nuGetFeedType: 'internal'
+              publishVstsFeed: 'cde17caf-1198-4a60-90b3-0703b5263860/834a9e3c-e662-4c26-8a33-a54324b7196b'
+          
+          # Print Version to Console
+          - script: |
+              echo "Version: $(buildVersion)"
+            displayName: 'Print Version to Console' 
 
-  # Print Version to Console
-  - script: |
-      echo "Version: $(buildVersion)"
-    displayName: 'Print Version to Console'
+  - stage: Notify
+    dependsOn: Publish
+    jobs:
+      - job: SendNotifications
+        displayName: 'Send Notifications'
+        steps:
+          # Success Email
+          - task: SendGridEmail@2
+            condition: succeeded()
+            inputs:
+              SendGridApiKey: '$(SENDGRID_API_KEY)'
+              FromAddress: 'sharon088@gmail.com'
+              ToAddresses: 'rotem23592@gmail.com'
+              Subject: 'Pipeline Success - Azure DevOps Build'
+              emailBodyFormat: 'InLine'
+              EmailBody: |
+                Pipeline has completed successfully.
+                
+                Build Number: $(Build.BuildNumber)
+                Build ID: $(Build.BuildId)
+                
+                ## Additional Information
+                - Source Branch: $(Build.SourceBranchName)
+                - Project: $(project)
+
+          # Failure Email
+          - task: SendGridEmail@2
+            condition: failed()
+            inputs:
+              SendGridApiKey: '$(SENDGRID_API_KEY)'
+              FromAddress: 'sharon088@gmail.com'
+              ToAddresses: 'rotem23592@gmail.com'
+              Subject: 'Pipeline Failed - Azure DevOps Build'
+              emailBodyFormat: 'InLine'
+              EmailBody: |
+                Pipeline has failed. Please check the logs for details.
+                
+                Build Number: $(Build.BuildNumber)
+                Build ID: $(Build.BuildId)
+                
+                ## Additional Information
+                - Source Branch: $(Build.SourceBranchName)
+                - Project: $(project)
+
+
