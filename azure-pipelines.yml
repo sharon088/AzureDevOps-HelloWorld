@@ -104,6 +104,11 @@ stages:
               nuGetFeedType: 'internal'
               publishVstsFeed: 'cde17caf-1198-4a60-90b3-0703b5263860/834a9e3c-e662-4c26-8a33-a54324b7196b'
 
+          # Print Version to Console
+          - script: |
+              echo "Version: $(buildVersion)"
+            displayName: 'Print Version to Console'
+
   - stage: Notify
     dependsOn: Publish
     jobs:
@@ -148,7 +153,4 @@ stages:
                 - Source Branch: $(Build.SourceBranchName)
                 - Project: $(project)
 
-          # Print Version to Console
-          - script: |
-              echo "Version: $(buildVersion)"
-            displayName: 'Print Version to Console'
+          
