@@ -14,6 +14,7 @@ variables:
   Patch: $(Build.BuildId)  # Automatically increments with each build
   buildVersion: "$(Major).$(Minor).$(Patch)-$(Build.SourceBranchName)"  
   SENDGRID_API_KEY: $(sendgridApiKey)
+  System.Debug: true
 
 stages:
   - stage: CleanAndInstall
