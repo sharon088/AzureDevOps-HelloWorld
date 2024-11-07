@@ -75,7 +75,6 @@ steps:
     inputs:
       command: 'pack'
       projects: '$(project)'
-      includesymbols: true
       buildProperties: 'PackageIdPrefix=$(packageName).'
       versioningScheme: 'byEnvVar' 
       versionEnvVar: 'buildVersion'
@@ -84,11 +83,11 @@ steps:
   # Push package to Azure Artifacts
   - task: DotNetCoreCLI@2
     inputs:
+      arguments: '--skip-duplicate'
       command: 'push'
       packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
       nuGetFeedType: 'internal'
       publishVstsFeed: 'cde17caf-1198-4a60-90b3-0703b5263860/834a9e3c-e662-4c26-8a33-a54324b7196b'
-      arguments: '--skip-duplicate'
     displayName: 'Push nupkg to Artifact'
 
     # Print Version to Console
