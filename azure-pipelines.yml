@@ -109,49 +109,19 @@ stages:
           - script: |
               echo "Version: $(buildVersion)"
             displayName: 'Print Version to Console'
-
-  - stage: Notify
-    dependsOn: Publish
-    jobs:
-      - job: SendNotifications
-        displayName: 'Send Notifications'
-        steps:
-          # Success Email
+          
           - task: SendGridEmail@2
-            condition: succeeded()
             inputs:
-              SendGridApiKey: '$(SENDGRID_API_KEY)'
+              SendGridApiKey: $(SENDGRID_API_KEY)
               FromAddress: 'sharon088@gmail.com'
               ToAddresses: 'rotem23592@gmail.com'
               Subject: 'Pipeline Success - Azure DevOps Build'
-              emailBodyFormat: 'InLine'
+              EmailBodyFormat: 'InLine'
               EmailBody: |
                 Pipeline has completed successfully.
-                
                 Build Number: $(Build.BuildNumber)
-                Build ID: $(Build.BuildId)
-                
-                ## Additional Information
-                - Source Branch: $(Build.SourceBranchName)
-                - Project: $(project)
+                Build ID: $(Build.BuildId)  
 
-          # Failure Email
-          - task: SendGridEmail@2
-            condition: failed()
-            inputs:
-              SendGridApiKey: '$(SENDGRID_API_KEY)'
-              FromAddress: 'sharon088@gmail.com'
-              ToAddresses: 'rotem23592@gmail.com'
-              Subject: 'Pipeline Failed - Azure DevOps Build'
-              emailBodyFormat: 'InLine'
-              EmailBody: |
-                Pipeline has failed. Please check the logs for details.
-                
-                Build Number: $(Build.BuildNumber)
-                Build ID: $(Build.BuildId)
-                
-                ## Additional Information
-                - Source Branch: $(Build.SourceBranchName)
-                - Project: $(project)
+
 
           
