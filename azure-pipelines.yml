@@ -11,7 +11,8 @@ variables:
   Major: '1'
   Minor: '0'
   Patch: $(Build.BuildId)  # Automatically increments with each build
-  buildVersion: "$(Major).$(Minor).$(Patch)-$(Build.SourceBranchName)"  
+  buildVersion: "$(Major).$(Minor).$(Patch)" 
+  packageName:  "$(Major).$(Minor).$(Patch)-$(Build.SourceBranchName)" 
   SENDGRID_API_KEY: $(sendgridApiKey)
 
 steps:
@@ -77,8 +78,8 @@ steps:
       includesymbols: true
       buildProperties: 'PackageIdPrefix=CustomPrefix.'
       versioningScheme: 'byEnvVar' 
-      versionEnvVar: 'buildVersion'
-    displayName: 'Pack project with branch $(Build.SourceBranchName) and version $(buildVersion)'
+      versionEnvVar: 'packageName'
+    displayName: 'Pack project with branch $(Build.SourceBranchName) and version $(packageName)'
 
   # Push package to Azure Artifacts
   - task: DotNetCoreCLI@2
@@ -87,6 +88,13 @@ steps:
       packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
       nuGetFeedType: 'internal'
       publishVstsFeed: 'cde17caf-1198-4a60-90b3-0703b5263860/834a9e3c-e662-4c26-8a33-a54324b7196b'
+      arguments: '--skip-duplicate'
+    displayName: 'Push nupkg to Artifact'
+
+    # Print Version to Console
+  - script: |
+      echo "Version: $(packageName)"
+    displayName: 'Print Version to Console'
 
   # Success Email - send if build is successful
   - task: SendGridEmail@2
@@ -126,7 +134,4 @@ steps:
         - Source Branch: $(Build.SourceBranchName)
         - Project: $(project)
 
-  # Print Version to Console
-  - script: |
-      echo "Version: $(buildVersion)"
-    displayName: 'Print Version to Console'
+
