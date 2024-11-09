@@ -13,7 +13,6 @@ variables:
   Minor: '0'
   Patch: $(Build.BuildId)  # Automatically increments with each build
   buildVersion: "$(Major).$(Minor).$(Patch)" 
-  packageName:  "$(Major).$(Minor).$(Patch)-$(Build.SourceBranchName)" 
   SENDGRID_API_KEY: $(sendgridApiKey)
 
 steps:
@@ -76,10 +75,9 @@ steps:
     inputs:
       command: 'pack'
       projects: '$(project)'
-      buildProperties: 'PackageIdPrefix=$(packageName).'
       versioningScheme: 'byEnvVar' 
       versionEnvVar: 'buildVersion'
-    displayName: 'Pack project with branch $(Build.SourceBranchName) and version $(packageName)'
+    displayName: 'Pack project with branch $(Build.SourceBranchName) and version $(buildVersion)'
 
   # Push package to Azure Artifacts
   - task: DotNetCoreCLI@2
@@ -93,7 +91,7 @@ steps:
 
     # Print Version to Console
   - script: |
-      echo "Version: $(packageName)"
+      echo "Version: $(buildVersion)"
     displayName: 'Print Version to Console'
 
   # Success Email - send if build is successful
