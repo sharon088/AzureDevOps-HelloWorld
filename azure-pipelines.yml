@@ -86,7 +86,7 @@ steps:
       command: 'push'
       packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
       nuGetFeedType: 'internal'
-      publishVstsFeed: 'cde17caf-1198-4a60-90b3-0703b5263860/834a9e3c-e662-4c26-8a33-a54324b7196b'
+      publishVstsFeed: $(myFeedId)
     displayName: 'Push nupkg to Artifact'
 
     # Print Version to Console
